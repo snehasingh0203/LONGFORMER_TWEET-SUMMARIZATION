@@ -1,0 +1,91 @@
+# ***SUMMARIZATION USING LONGFORMER MODEL***
+
+
+!pip install transformers
+!pip install tensorflow
+from transformers import pipeline
+from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
+
+!pip install git+https://github.com/huggingface/nlp.git
+
+import torch
+from transformers import LongformerTokenizerFast
+
+tokenizer = LongformerTokenizerFast.from_pretrained('allenai/longformer-base-4096')
+
+import os
+
+current_directory = os.getcwd()
+print("Current Directory:", current_directory)
+
+
+%cd /content/drive
+%cd /content/drive/MyDrive
+!ls /content/drive/MyDrive
+!ls %cd /content/drive/MyDrive/Colab_Notebooks
+
+!pwd
+
+%cd /content/drive/MyDrive/Colab_Notebooks/Copy of Final_datasets
+!ls /content/drive/MyDrive/Colab_Notebooks/Copy of Final_datasets
+%cd /content/drive/MyDrive/Colab_Notebooks/dataset/Copy of Final_datasets
+
+
+
+from transformers import LongformerTokenizer
+
+model_name = "allenai/longformer-base-4096"
+tokenizer = LongformerTokenizer.from_pretrained(model_name)
+
+
+file_path = 'G:\My Drive\Colab Notebooks\dataset\Summary_files'
+dataset = [
+    {"text": "This is the first document."}
+]
+
+features = []
+for data_sample in dataset:
+    text = data_sample["text"]
+
+    inputs = tokenizer.encode_plus(
+        text,
+        add_special_tokens=True,
+        max_length=200,
+        padding='max_length',
+        truncation=True,
+        return_tensors='pt'
+    )
+
+    input_ids = inputs["input_ids"]
+    attention_mask = inputs["attention_mask"]
+
+
+    feature = {
+        "input_ids": input_ids.squeeze(),
+        "attention_mask": attention_mask.squeeze(),
+    }
+    features.append(feature)
+
+
+
+def summarize(text: str) -> str:
+    input_ids = tokenizer.encode(text, return_tensors='pt')
+    output_ids = model.generate(input_ids)
+    summary = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    return summary
+
+
+input_tweets=[]
+t=' '
+f = open('/content/IKDSumm_Uflood.txt"', "r", encoding="utf8")
+for x in f:
+  t=t+x+' '
+  input_tweets.append(t)
+
+genertaed_summary=[]
+inputs = tokenizer("summarize: " + t, return_tensors="pt", max_length=512, truncation=True)
+outputs = sum_model.generate(inputs["input_ids"], max_length=200, min_length=150, length_penalty=4.0, num_beams=4, early_stopping=True)
+gs = tokenizer.decode(outputs[0])[6:-4]
+genertaed_summary.append(gs)
+
+generated_summary
